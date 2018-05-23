@@ -18,7 +18,9 @@
 
 #include "pantalla.h"
 
-#include "rele1.h"
+#include "global_variables.h"
+
+//#include "rele1.h"
 //_______________________________________________________________________________defines
 // For the Adafruit shield, these are the default.
 #define TFT_DC 26  // PANTALLA
@@ -62,11 +64,9 @@ const int sensorPin0 = A0;  //HIGROMETROS
 const int sensorPin1 = A1;  //HIGROMETROS
 
 // Pin analogico de entrada para el LDR
-int pinLDR = 7;  //LDR sensor LUZ
+int pinLDR = A7;  //LDR sensor LUZ => LUISDA: Estaba puesto 7, el pin es A7, no 7 a secas :-) .
 // Variable donde se almacena el valor del LDR
-int valorLDR = 0;  //LDR sensor LUZ
-
-
+//int valorLDR = 0;  //LDR sensor LUZ; LUISDA: Pasado a variable global.
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);  // PANTALLA
@@ -128,14 +128,14 @@ void vlPANTALLA()
   tft.setRotation(1);//0 y 4 vertical , 1 y 3 horizontal, 6 vertical con texto en pines.
     //int testText();
     //testText();
-    delay(4000);
+  delay(4000);
 
   tft.fillScreen(ILI9341_BLACK);// para loop con pantalla en negro
   tft.setCursor(0, 0);
   tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(1);
   tft.print("AMDG  +++             ");
 
-    DateTime now = rtc.now();
+  DateTime now = rtc.now();
   tft.print("    ");
   tft.print(now.year(), DEC);
   tft.print('/');
@@ -149,7 +149,6 @@ void vlPANTALLA()
   tft.print(':');
   tft.print(now.minute(), DEC);
 
-
   tft.println(" ");
   tft.println(" ");
 
@@ -158,17 +157,6 @@ void vlPANTALLA()
   tft.setTextColor(ILI9341_WHITE); tft.setTextSize(1);
   tft.println("VERSION");//____________________________________________________________ versión del proyecto estable / version beta con cambios
   tft.println("                                              PRUEBA");//____________________________________________________________ versión del proyecto estable / version beta con cambios
-  //tft.setTextColor(ILI9341_RED);    tft.setTextSize(3);
-  // tft.println(0xDEADBEEF, HEX);
-  // tft.println();
-  // tft.setTextColor(ILI9341_GREEN);
-  // tft.setTextSize(5);
-  // tft.println("Groop");
-  // tft.setTextColor(ILI9341_GREEN);
-  //tft.setTextSize(5);
-  // tft.println("hola irene!!");
-  //tft.setTextSize(1);
-  //tft.println("I implore thee,");
 }
 
 void vlDS18B20()
@@ -178,12 +166,17 @@ void vlDS18B20()
     // Mandamos comandos para toma de temperatura a los sensores
   Serial.println("Mandando comandos a los sensores");
   sensorDS18B20.requestTemperatures();
+
+  //LUISDA: Leemos las temperaturas una sola vez.
+  g_temperatura_tierra = sensorDS18B20.getTempC(temperatura_tierra);
+  g_temperatura_agua = sensorDS18B20.getTempC(temperatura_agua);
+
   // Leemos y mostramos los datos de los sensores DS18B20 por dirección única
   Serial.print("Temperatura de la tierra ds18b20: ");
-  Serial.print(sensorDS18B20.getTempC(temperatura_tierra));
+  Serial.print(g_temperatura_tierra);
   Serial.println(" C");
   Serial.print("Temperatura del agua ds18b20: ");
-  Serial.print(sensorDS18B20.getTempC(temperatura_agua));
+  Serial.print(g_temperatura_agua);
   Serial.println(" C");
 
   tft.setTextColor(ILI9341_YELLOW); tft.setTextSize(1);
@@ -194,32 +187,29 @@ void vlDS18B20()
 
   tft.setTextColor(ILI9341_YELLOW); tft.setTextSize(2);
   tft.print(" TT: ");
-  tft.print(sensorDS18B20.getTempC(temperatura_tierra));
+  tft.print(g_temperatura_tierra);
   tft.print(" C ");
   tft.print(" TA: ");
-  tft.print(sensorDS18B20.getTempC(temperatura_agua));
+  tft.print(g_temperatura_agua);
   tft.print(" C  ");
 }
 
 void vlDTH()
 {
-  // Wait a few seconds between measurements.
-     //delay(1000);
-
      // Reading temperature or humidity takes about 250 milliseconds!
-     float h1 = dht1.readHumidity(); //para sensor 1 dht1 HT1 44
-     float t1 = dht1.readTemperature();
+     g_humedad_ambiente1 = dht1.readHumidity(); //para sensor 1 dht1 HT1 44
+     g_temperatura_ambiente1 = dht1.readTemperature();
 
-     if (isnan(h1) || isnan(t1)) {
+     if (isnan(g_humedad_ambiente1) || isnan(g_temperatura_ambiente1)) {
         Serial.println("Failed DHT 1!");
         return;
      }
 
      Serial.print("H 1: "); //del sensor 1
-     Serial.print(h1);
+     Serial.print(g_humedad_ambiente1);
      Serial.print(" %\t");
      Serial.print("T 1: ");
-     Serial.print(t1);
+     Serial.print(g_temperatura_ambiente1);
      Serial.print(" *C ");
      Serial.print("\t");
 
@@ -231,121 +221,107 @@ void vlDTH()
     tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(2);
     tft.println(" ");
 
-      tft.print(" H1: "); //del sensor 1
-      tft.print(h1);
-      tft.print(" % ");
-      tft.print(" T1: ");
-      tft.print(t1);
-      tft.println(" C ");
+    tft.print(" H1: "); //del sensor 1
+    tft.print(g_humedad_ambiente1);
+    tft.print(" % ");
+    tft.print(" T1: ");
+    tft.print(g_temperatura_ambiente1);
+    tft.println(" C ");
 
 
-     float h2 = dht2.readHumidity(); //para sensor 2 dht2 HT2 45
-     float t2 = dht2.readTemperature();
+    g_humedad_ambiente2 = dht2.readHumidity(); //para sensor 2 dht2 HT2 45
+    g_temperatura_ambiente1 = dht2.readTemperature();
 
-     if (isnan(h2) || isnan(t2)) {
-        Serial.println("Failed DHT 2!");
-        return;
-     }
+    if (isnan(g_humedad_ambiente2) || isnan(g_temperatura_ambiente1)) {
+      Serial.println("Failed DHT 2!");
+      return;
+    }
 
-     Serial.print("H 2: ");// del sensor 2
-     Serial.print(h2);
-     Serial.print(" %\t");
-     Serial.print("T 2: ");
-     Serial.print(t2);
-     Serial.print(" *C ");
-     Serial.print("\t");
+    Serial.print("H 2: ");// del sensor 2
+    Serial.print(g_humedad_ambiente2);
+    Serial.print(" %\t");
+    Serial.print("T 2: ");
+    Serial.print(g_temperatura_ambiente2);
+    Serial.print(" *C ");
+    Serial.print("\t");
 
-      tft.print(" H2: ");// del sensor 2
-      tft.print(h2);
-      tft.print(" % ");
-      tft.print(" T2: ");
-      tft.print(t2);
-      tft.println(" C ");
+    tft.print(" H2: ");// del sensor 2
+    tft.print(g_humedad_ambiente2);
+    tft.print(" % ");
+    tft.print(" T2: ");
+    tft.print(g_temperatura_ambiente2);
+    tft.println(" C ");
 
-    float h3 = dht3.readHumidity(); //para sensor 3 dht3 HT3 46
-     float t3 = dht3.readTemperature();
+    g_humedad_ambiente3 = dht3.readHumidity(); //para sensor 3 dht3 HT3 46
+    g_temperatura_ambiente3 = dht3.readTemperature();
 
-     if (isnan(h3) || isnan(t3)) {
+    if (isnan(g_humedad_ambiente3) || isnan(g_temperatura_ambiente3)) {
         Serial.println("Failed DHT 3!");
         return;
-     }
+    }
 
      Serial.print("H 3: "); // del sensor 3
-     Serial.print(h3);
+     Serial.print(g_humedad_ambiente3);
      Serial.print(" %\t");
      Serial.print(" 3: ");
-     Serial.print(t3);
+     Serial.print(g_temperatura_ambiente3);
      Serial.print(" *C ");
      Serial.print("\n");
 
 
-      tft.print(" H3: "); // del sensor 3
-      tft.print(h3);
-      tft.print(" % ");
-      tft.print(" T3: ");
-      tft.print(t3);
-      tft.println(" C ");
-
+     tft.print(" H3: "); // del sensor 3
+     tft.print(g_humedad_ambiente3);
+     tft.print(" % ");
+     tft.print(" T3: ");
+     tft.print(g_temperatura_ambiente3);
+     tft.println(" C ");
 }
 
 void vlHIGROMETROS()
 {
   //delay(1000);
     // Confi del sensor 1 en pin analogico 0 medidor de humedad de tierra
-    int val0 = analogRead(0);
-    val0 = map(val0, 300, 1023, 100, 0);
+    //int val0 = analogRead(0); //LUISDA: La entrada analógica A0 no es el pin 0, cuidado con esto.
+    g_humedad1 = analogRead(A0);
+    g_humedad1 = map(g_humedad1, 300, 1023, 100, 0);
     //analogWrite(0, val);
     Serial.print("Humedad_1 ");
-    Serial.print(val0);
+    Serial.print(g_humedad1);
     Serial.println("% ");
-    int humedad1 = analogRead(sensorPin0);
+    //int humedad1 = analogRead(sensorPin0); //LUISDA: No hace falta leer un mismo pin varias veces ni usar distintas variables (no olvidar: ahorrar carga del micro es clave :-) )
     //   Serial.print("Humedad ");
-    Serial.println(humedad1);
+    Serial.println(g_humedad1);
 
-    //   Serial.println(humedad);
-    //   if(humedad < 500)
-    //   {
-    //      Serial.println("Encendido");
-    //      //hacer las acciones necesarias
-      tft.setTextColor(ILI9341_GREEN); tft.setTextSize(1);
-      tft.println(" ");
-      tft.setTextColor(ILI9341_GREEN); tft.setTextSize(1);
-          //tft.println(" ");
-          tft.print(" SENSORES HUMEDAD DEL SUELO");
-      tft.setTextColor(ILI9341_YELLOW); tft.setTextSize(1);
-          tft.println("                   LUZ");
-      tft.println(" ");
-      tft.setTextColor(ILI9341_GREEN); tft.setTextSize(2);
-          //tft.println(" ");
-          tft.print(" HS_1: ");
-          tft.print(val0);
-          tft.print("%");
-
+    //LUISDA: Conviene tener una indentación (para entendernos, sangrado) correcta. Dentro de un mismo ámbito, es buena práctica tener todas las líneas con el mismo sangrado
+    tft.setTextColor(ILI9341_GREEN); tft.setTextSize(1);
+    tft.println(" ");
+    tft.setTextColor(ILI9341_GREEN); tft.setTextSize(1);
+    tft.print(" SENSORES HUMEDAD DEL SUELO");
+    tft.setTextColor(ILI9341_YELLOW); tft.setTextSize(1);
+    tft.println("                   LUZ");
+    tft.println(" ");
+    tft.setTextColor(ILI9341_GREEN); tft.setTextSize(2);
+    tft.print(" HS_1: ");
+    tft.print(g_humedad1);
+    tft.print("%");
 
 
     // Confi del sensor 2 en pin analogico 1 medidor de humedad de tierra
-    int val1 = analogRead(1);
-    val1 = map(val1, 300, 1023, 100, 0);
+    //int val1 = analogRead(A1); //LUISDA: Pasamos la lectura a variable global, para una futura reorganización del código.
+    g_humedad2 = analogRead(A1);
+    g_humedad2 = map(g_humedad2, 300, 1023, 100, 0);
     //analogWrite(0, val);
     Serial.print("Humedad_2: ");
-    Serial.print(val1);
+    Serial.print(g_humedad2);
     Serial.println("%");
+    //int humedad2 = analogRead(sensorPin1); //LUISDA: Lo mismo, no hace falta hacer dos lecturas en un mismo ciclo (no es eficiente)
+    Serial.println(g_humedad2);
 
-    int humedad2 = analogRead(sensorPin1);
-    //   Serial.print("Humedad ");
-    Serial.println(humedad2);
+    tft.print(" HS_2: ");
+    tft.print(g_humedad2);
+    tft.print("%");
 
-    //   Serial.println(humedad);
-    //   if(humedad2 < 500)
-    //   {
-    //      Serial.println("Encendido");
-    //      //hacer las acciones necesarias
-    //   }
-        tft.print(" HS_2: ");
-        tft.print(val1);
-        tft.print("%");
-
-
+    //LUISDA: Una nota interesante, el código que esté comentado, lo he quitado. Dejarlo únicamente si tenemos dudas, si no, es un incordio y dificulta la lectura del código fuente.
 }
 
 void vlLDR()
@@ -353,23 +329,23 @@ void vlLDR()
     // Guardamos el valor leido del ADC en una variable
     // El valor leido por el ADC (voltaje) aumenta de manera directamente proporcional
     // con respecto a la luz percibida por el LDR
-    valorLDR= analogRead(pinLDR);
+    g_LDR= analogRead(pinLDR);
 
     // Devolver el valor leido a nuestro monitor serial en el IDE de Arduino
-    Serial.print(valorLDR);
+    Serial.print(g_LDR);
 
-    int valorluz = valorLDR;
+    //int valorluz = valorLDR; //LUISDA: No es necesario hacer copia de una variable, esto ocupa memoria tanto de programa como RAM en el micro.
     //Uso la funcion map para pasar a % el valorLDR
-    valorluz = map(valorluz, 600, 0, 100, 0);
+    g_LDR = map(g_LDR, 600, 0, 100, 0);
     //analogWrite(0, val);
     Serial.print("  L: ");
-    Serial.print(valorluz);
+    Serial.print(g_LDR);
     Serial.println("%");
 
     //tft.println(" ");
     //tft.println(" ");
     tft.print(" L: ");
-    tft.print(valorluz);
+    tft.print(g_LDR);
     tft.println("%");
 
       //___________________letras finales de la pantalla
