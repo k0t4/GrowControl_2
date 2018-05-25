@@ -1,6 +1,9 @@
 // Ventilador por rango de temperatura
 #include <DHT.h>  //DTH
 #include <Adafruit_Sensor.h>  //DTH
+
+#include "global_variables.h" //LUISDA: En cada fichero *.cpp debemos hacer este include para acceder a las variables globales
+
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
 //const int DHTPin = 5;     // what digital pin we're connected to
 #define HT1 40  //DTH
@@ -11,7 +14,9 @@ const int tempmax = 25; // Rango temperatura maxima
 
 // FALTAN MAS VARIABLES DE MAX Y MIN
 
-bool state = 0; // Ventilador activo o inactivo
+//bool state = 0; // Ventilador activo o inactivo => LUISDA: Lo pasamos a variable global... Y le damos un nombre más descriptivo, g_ventilador_estado
+
+
 //float temp1();
 DHT dht11(HT1, DHTTYPE);  //DTH
 
@@ -27,18 +32,19 @@ void vsRele1()
 
 void vlRele1()
 {
-  float t11 = dht11.readTemperature();
+  //float t11 = dht11.readTemperature();
+  //LUISDA: Ya que hemos definido la variable global g_temperatura_ambiente1, la usamos (en ella se escribe en la pantalla) ;-) .
   //float currentTemperature = GetTemperature();
 
-  if(state == 0 && t11 > tempmax)
+  if(g_estado_ventilador1 == 0 && g_temperatura_ambiente1 > tempmax)
   {
-      state = 1;
+      g_estado_ventilador1 = 1;
       digitalWrite(2, HIGH);   // encender ventilador
   }
 
-  if(state == 1 && t11 < tempmin)
+  if(g_estado_ventilador1 == 1 && g_temperatura_ambiente1 < tempmin)
   {
-      state == 0;
+      g_estado_ventilador1 == 0;
       digitalWrite(2, LOW);   // apagar ventilador
   }
 }
@@ -55,18 +61,18 @@ void vsRele2()
 
 void vlRele2()
 {
-  float t11 = dht11.readTemperature();
+  //float t11 = dht11.readTemperature(); //LUISDA: Usar mejor la variable global g_temperatura_ambiente1
   //float currentTemperature = GetTemperature();
 
-  if(state == 0 && t11 > tempmax)
+  if(g_estado_ventilador2 == 0 && g_temperatura_ambiente1 > tempmax)
   {
-      state = 1;
+      g_estado_ventilador2 = 1;
       digitalWrite(3, HIGH);   // encender ventilador
   }
 
-  if(state == 1 && t11 < tempmin)
+  if(g_estado_ventilador2 == 1 && g_temperatura_ambiente1 < tempmin)
   {
-      state == 0;
+      g_estado_ventilador2 == 0;
       digitalWrite(3, LOW);   // apagar ventilador
   }
 }
@@ -111,18 +117,19 @@ void vsRele5()
 
 void vlRele5()
 {
-  float t11 = dht11.readTemperature();
+  //float t11 = dht11.readTemperature(); //LUISDA: Usar mejor la variable global g_temperatura_ambiente1
+
   //float currentTemperature = GetTemperature();
 
-  if(state == 0 && t11 > tempmax)
+  if(g_estado_calentador == 0 && g_temperatura_ambiente1 > tempmax)
   {
-      state = 1;
+      g_estado_calentador = 1;
       digitalWrite(6, HIGH);   // encender ventilador
   }
 
-  if(state == 1 && t11 < tempmin)
+  if(g_estado_calentador == 1 && g_temperatura_ambiente1 < tempmin)
   {
-      state == 0;
+      g_estado_calentador == 0;
       digitalWrite(6, LOW);   // apagar ventilador
   }
 }

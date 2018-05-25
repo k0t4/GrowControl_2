@@ -18,3 +18,9 @@ extern float g_humedad_ambiente2;
 extern float g_temperatura_ambiente2;
 extern float g_humedad_ambiente3;
 extern float g_temperatura_ambiente3;
+
+//LUISDA: Podría ser interesante englobar en un solo byte el estado de todos los relés, a estudiar para un poco más adelante, de momento así:
+extern unsigned char g_estado_ventilador1;
+extern unsigned char g_estado_ventilador2;
+
+extern unsigned char g_estado_calentador;
