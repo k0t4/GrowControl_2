@@ -11,7 +11,7 @@
 #include <Arduino.h>
 
 #include "pantalla.h"
-
+#include "sensores.h"
 #include "rele1.h"
 
 // PARA VER QUE FUNCIONA ARDUINO MEGA
@@ -38,13 +38,25 @@ void setup(){
 
 void loop()
 {
+  //LUISDA: Diferenciamos las funciones en tres grandes bloques:
+  // - lectura de sensores.
+  // - Refresco de pantalla
+  // - Acciones sobre los actuadores.
 
+  //Lectura de sensores
+  actualizarSensorDS18B20();
+  actualizarSensoresDTH();
+  actualizarHigrometros();
+  actualizarLDR();
+
+  //Funciones de refresco de la pantalla
   vlPANTALLA();
   vlDS18B20();
   vlDTH();
   vlHIGROMETROS();
   vlLDR();
 
+  //Funciones de los actuadores
   vlRele1();
 
 
