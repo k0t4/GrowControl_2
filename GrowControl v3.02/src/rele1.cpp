@@ -10,7 +10,7 @@
 
 //const int ledRele = 2; // PWM que activa el rele para activar ventilador
 const int tempmin = 23; // Rango temperatura minima
-const int tempmax = 25; // Rango temperatura maxima
+const int tempmax = 26; // Rango temperatura maxima
 
 // FALTAN MAS VARIABLES DE MAX Y MIN
 

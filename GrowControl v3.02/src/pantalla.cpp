@@ -93,7 +93,7 @@ void vlPANTALLA()
 {
   //for(uint8_t rotation=0; rotation<4; rotation++) {
   //tft.setRotation(rotation);
-  tft.setRotation(1);//0 y 4 vertical , 1 y 3 horizontal, 6 vertical con texto en pines.
+  tft.setRotation(3);//0 y 4 vertical , 1 y 3 horizontal, 6 vertical con texto en pines.
     //int testText();
     //testText();
   delay(4000);

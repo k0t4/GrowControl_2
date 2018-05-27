@@ -66,7 +66,7 @@ void actualizarSensoresDTH()
   }
 
   g_humedad_ambiente2 = g_dht2.readHumidity(); //para sensor 2 dht2 HT2 45
-  g_temperatura_ambiente1 = g_dht2.readTemperature();
+  g_temperatura_ambiente2 = g_dht2.readTemperature();
 
   if (isnan(g_humedad_ambiente2) || isnan(g_temperatura_ambiente1)) {
     Serial.println("Failed DHT 2!");
