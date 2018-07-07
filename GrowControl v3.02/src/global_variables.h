@@ -4,6 +4,23 @@
 #ifndef GLOBAL_VARIABLES_H
 #define GLOBAL_VARIABLES_H
 
+//Horainicio luz
+#define HORA_INICIO_LUZ 7.00
+#define HORA_FIN_LUZ 22.00
+
+//Horas inicio y fin del riego
+#define HORA_INICIO_RIEGO_1 8.00
+#define HORA_INICIO_RIEGO_2 12.00
+#define HORA_INICIO_RIEGO_3 16.00
+#define HORA_INICIO_RIEGO_4 20.00
+#define DURACION_RIEGO_MIN 5.0
+
+#define TEMP_MIN_VENTILADOR 20
+#define TEMP_MAX_VENTILADOR 33
+
+#define TEMP_MIN_CALENTADOR 10
+#define TEMP_MAX_CALENTADOR 20
+
 #include <Wire.h>  //RELOJ 3231
 #include "RTClib.h"  //RELOJ 3231
 
@@ -12,6 +29,7 @@
 
 //#include <OneWire.h>  //ds18b20
 #include <DallasTemperature.h>  //ds18b20
+
 
 //Variables que contendrán la lectura de los higrómetros analógicos conectado a A0 y A1, respectivamente
 extern int g_humedad1;

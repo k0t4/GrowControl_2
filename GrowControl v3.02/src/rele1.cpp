@@ -9,8 +9,8 @@
 #define HT1 40  //DTH
 
 //const int ledRele = 2; // PWM que activa el rele para activar ventilador
-const int tempmin = 23; // Rango temperatura minima
-const int tempmax = 26; // Rango temperatura maxima
+//const int tempmin = 23; // Rango temperatura minima
+//const int tempmax = 26; // Rango temperatura maxima
 
 // FALTAN MAS VARIABLES DE MAX Y MIN
 
@@ -30,19 +30,19 @@ void vsRele1()
 
 
 
-void vlRele1()
+void vlRele1() //Ventilador de la parte superior
 {
   //float t11 = dht11.readTemperature();
   //LUISDA: Ya que hemos definido la variable global g_temperatura_ambiente1, la usamos (en ella se escribe en la pantalla) ;-) .
   //float currentTemperature = GetTemperature();
 
-  if(g_estado_ventilador1 == 0 && g_temperatura_ambiente1 > tempmax)
+  if(g_estado_ventilador1 == 0 && g_temperatura_ambiente1 > TEMP_MAX_VENTILADOR)
   {
       g_estado_ventilador1 = 1;
       digitalWrite(2, HIGH);   // encender ventilador
   }
 
-  if(g_estado_ventilador1 == 1 && g_temperatura_ambiente1 < tempmin)
+  if(g_estado_ventilador1 == 1 && g_temperatura_ambiente1 < TEMP_MIN_VENTILADOR)
   {
       g_estado_ventilador1 == 0;
       digitalWrite(2, LOW);   // apagar ventilador
@@ -59,18 +59,18 @@ void vsRele2()
 
 
 
-void vlRele2()
+void vlRele2() //Ventilador de la parte superior
 {
   //float t11 = dht11.readTemperature(); //LUISDA: Usar mejor la variable global g_temperatura_ambiente1
   //float currentTemperature = GetTemperature();
 
-  if(g_estado_ventilador2 == 0 && g_temperatura_ambiente1 > tempmax)
+  if(g_estado_ventilador2 == 0 && g_temperatura_ambiente1 > TEMP_MAX_VENTILADOR)
   {
       g_estado_ventilador2 = 1;
       digitalWrite(3, HIGH);   // encender ventilador
   }
 
-  if(g_estado_ventilador2 == 1 && g_temperatura_ambiente1 < tempmin)
+  if(g_estado_ventilador2 == 1 && g_temperatura_ambiente1 < TEMP_MIN_VENTILADOR)
   {
       g_estado_ventilador2 == 0;
       digitalWrite(3, LOW);   // apagar ventilador
@@ -80,6 +80,7 @@ void vlRele2()
 //___________________luz_____________________________________________________________________
 void vsRele3()
 {
+  pinMode(4,OUTPUT);
 
 }
 
@@ -87,6 +88,19 @@ void vsRele3()
 
 void vlRele3()
 {
+  DateTime now = g_rtc_clk.now();
+  float hours = now.hour() +  now.minute();
+
+  bool hourCondition = ((hours > HORA_INICIO_LUZ) || (hours < HORA_FIN_LUZ));
+
+  if (hourCondition)
+  {
+    pinMode(4, HIGH);
+  }
+  else
+  {
+    pinMode(4, LOW);
+  }
 
 }
 
@@ -102,7 +116,24 @@ void vsRele4()
 
 void vlRele4()
 {
+  DateTime now = g_rtc_clk.now();
+  float hours = now.hour() +  now.minute();
 
+  bool hourCondition1 = ((hours > HORA_INICIO_RIEGO_1) && (hours < HORA_INICIO_RIEGO_1 + DURACION_RIEGO_MIN/60.0));
+  bool hourCondition2 = ((hours > HORA_INICIO_RIEGO_2) && (hours < HORA_INICIO_RIEGO_2 + DURACION_RIEGO_MIN/60.0));
+  bool hourCondition3 = ((hours > HORA_INICIO_RIEGO_3) && (hours < HORA_INICIO_RIEGO_3 + DURACION_RIEGO_MIN/60.0));
+  bool hourCondition4 = ((hours > HORA_INICIO_RIEGO_4) && (hours < HORA_INICIO_RIEGO_4 + DURACION_RIEGO_MIN/60.0));
+
+
+
+  if ((hourCondition1 || hourCondition2 || hourCondition3 || hourCondition4) && (g_humedad1 < 90) && (g_humedad2 < 90))
+  {
+    pinMode(5, HIGH);
+  }
+  else
+  {
+    pinMode(5, LOW);
+  }
 }
 
 //__________________________HEATER______________________________________________________________
@@ -120,17 +151,26 @@ void vlRele5()
   //float t11 = dht11.readTemperature(); //LUISDA: Usar mejor la variable global g_temperatura_ambiente1
 
   //float currentTemperature = GetTemperature();
+  //bool tempBajaCondition1 = (g_temperatura_ambiente1 < TEMP_MIN_CALENTADOR);
+  bool tempBajaCondition2 = (g_temperatura_ambiente2 < TEMP_MIN_CALENTADOR);
+  bool tempBajaCondition3 = (g_temperatura_ambiente3 < TEMP_MIN_CALENTADOR);
+  bool tempBajaCondition = (/*tempBajaCondition1 ||*/ tempBajaCondition2 || tempBajaCondition3);
 
-  if(g_estado_calentador == 0 && g_temperatura_ambiente1 > tempmax)
+  //bool tempAltaCondition1 = (g_temperatura_ambiente1 > TEMP_MAX_CALENTADOR);
+  bool tempAltaCondition2 = (g_temperatura_ambiente2 > TEMP_MAX_CALENTADOR);
+  bool tempAltaCondition3 = (g_temperatura_ambiente3 > TEMP_MAX_CALENTADOR);
+  bool tempAltaCondition = (/*tempAltaCondition1 ||*/ tempAltaCondition2 || tempAltaCondition3);
+  //NOTA: Determinar el sensor más cercano a la luz ambiental por si puede interferir con la función, y ése se excluye
+  if(g_estado_calentador == 1 && tempAltaCondition)
   {
-      g_estado_calentador = 1;
-      digitalWrite(6, HIGH);   // encender ventilador
+      g_estado_calentador = 0;
+      digitalWrite(6, LOW);   // apagar el calentador
   }
 
-  if(g_estado_calentador == 1 && g_temperatura_ambiente1 < tempmin)
+  if(g_estado_calentador == 0 && tempBajaCondition)
   {
-      g_estado_calentador == 0;
-      digitalWrite(6, LOW);   // apagar ventilador
+      g_estado_calentador == 1;
+      digitalWrite(6, HIGH);   // encender el calentador
   }
 }
 

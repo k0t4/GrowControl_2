@@ -32,6 +32,13 @@ void setup(){
     vsPANTALLA();
 
     vsRele1();
+    vsRele2();
+    vsRele3();
+    vsRele4();
+    vsRele5();
+    //vsRele7();
+
+
 
 }
 
@@ -58,6 +65,10 @@ void loop()
 
   //Funciones de los actuadores
   vlRele1();
+  vlRele2();
+  vlRele3();
+  vlRele4();
+  vlRele5();
 
 
 }
