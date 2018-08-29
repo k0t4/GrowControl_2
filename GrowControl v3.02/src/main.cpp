@@ -1,13 +1,5 @@
 
 
-// VERSION_3.01 ===================> GrowControl
-// Estable con 3 dth22, 2 ds18b20, 2 higrometros, 1 reloj ds3231, 1 LDR
-// Creado 11 de abril 2018 AMDG.
-
-// Instrucciones:
-// Cambiar la version en el número de la pantalla del final del código para que coincida con el nombre del archivo.
-// Si se añaden sensores en el loop, hay que añadirlos también en la confi de la pantalla.
-
 #include <Arduino.h>
 
 #include "pantalla.h"
@@ -16,6 +8,7 @@
 
 // PARA VER QUE FUNCIONA ARDUINO MEGA
 const int ledPin = 13;  //LDR sensor LUZ
+// EN UN FUTURO PASAR A DEFINE
 
 
 void setup(){
@@ -45,7 +38,7 @@ void setup(){
 
 void loop()
 {
-  //LUISDA: Diferenciamos las funciones en tres grandes bloques:
+  // Diferenciamos las funciones en tres grandes bloques:
   // - lectura de sensores.
   // - Refresco de pantalla
   // - Acciones sobre los actuadores.

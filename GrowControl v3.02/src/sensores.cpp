@@ -10,15 +10,21 @@ void vsDS18B20()
 {
     // Iniciamos el bus 1-Wire  //ds18b20
     g_sensorDS18B20.begin();  //ds18b20
+
+#ifdef DEBUG_MODE
     // Buscamos los sensores conectados  //ds18b20
     Serial.println("Buscando dispositivos...");  //ds18b20
     Serial.println("Encontrados: ");  //ds18b20
     Serial.print(g_sensorDS18B20.getDeviceCount());  //ds18b20
     Serial.println(" sensores");  //ds18b20
+#endif
 }
 void vsDTH()
 {
+#ifdef DEBUG_MODE   
     Serial.println("AMGD ADRIAN TFG");  //DTH
+#endif
+
     g_dht1.begin();//Inicializamos los sensores  //DTH
     g_dht2.begin();  //DTH
     g_dht3.begin();  //DTH
@@ -27,12 +33,16 @@ void vsRELOJ3231()
 {
     //RELOJ 3231
     if (! g_rtc_clk.begin()) {
+#ifdef DEBUG_MODE
       Serial.println("Couldn't find RTC");
+#endif
       while (1);
     }
     //RELOJ 3231
     if (g_rtc_clk.lostPower()) {
+#ifdef DEBUG_MODE
       Serial.println("RTC lost power, lets set the time!");  //RELOJ 3231
+#endif
       // following line sets the RTC to the date & time this sketch was compiled
       g_rtc_clk.adjust(DateTime(F(__DATE__), F(__TIME__)));  //RELOJ 3231
       // This line sets the RTC with an explicit date & time, for example to set
@@ -41,15 +51,17 @@ void vsRELOJ3231()
     }  //RELOJ 3231
 }
 
-//LUISDA: Funciones de lectura de sensores
+// Funciones de lectura de sensores
 //____________________________________________________________ Actualizar el sensor DS18B20
 void actualizarSensorDS18B20()
 {
   // Mandamos comandos para toma de temperatura a los sensores
+#ifdef DEBUG_MODE
   Serial.println("Mandando comandos a los sensores");
+#endif
   g_sensorDS18B20.requestTemperatures();
 
-  //LUISDA: Leemos las temperaturas una sola vez.
+  // Leemos las temperaturas una sola vez.
   g_temperatura_tierra = g_sensorDS18B20.getTempC(temperatura_tierra);
   g_temperatura_agua = g_sensorDS18B20.getTempC(temperatura_agua);
 }
@@ -61,7 +73,9 @@ void actualizarSensoresDTH()
   g_temperatura_ambiente1 = g_dht1.readTemperature();
 
   if (isnan(g_humedad_ambiente1) || isnan(g_temperatura_ambiente1)) {
+#ifdef DEBUG_MODE
      Serial.println("Failed DHT 1!");
+#endif
      //return;
   }
 
@@ -69,7 +83,9 @@ void actualizarSensoresDTH()
   g_temperatura_ambiente2 = g_dht2.readTemperature();
 
   if (isnan(g_humedad_ambiente2) || isnan(g_temperatura_ambiente1)) {
+#ifdef DEBUG_MODE
     Serial.println("Failed DHT 2!");
+#endif
     //return;
   }
 
@@ -77,7 +93,9 @@ void actualizarSensoresDTH()
   g_temperatura_ambiente3 = g_dht3.readTemperature();
 
   if (isnan(g_humedad_ambiente3) || isnan(g_temperatura_ambiente3)) {
+#ifdef DEBUG_MODE
       Serial.println("Failed DHT 3!");
+#endif
       //return;
   }
 }
@@ -98,9 +116,10 @@ void actualizarLDR()
   g_LDR= analogRead(A7);
 
   // Devolver el valor leido a nuestro monitor serial en el IDE de Arduino
+#ifdef DEBUG_MODE
   Serial.print("LDR: ");
   Serial.println(g_LDR);
-
+#endif
   //Uso la funcion map para pasar a % el valorLDR
   g_LDR = map(g_LDR, 600, 0, 100, 0);
 }

@@ -4,6 +4,10 @@
 #ifndef GLOBAL_VARIABLES_H
 #define GLOBAL_VARIABLES_H
 
+//Para depurar con traza serie. Si deseo ver las trazas, descomentar lo siguiente: 
+//#define DEBUG_MODE
+//Compilar y subir
+
 //Horainicio luz
 #define HORA_INICIO_LUZ 7.00
 #define HORA_FIN_LUZ 22.00
@@ -49,7 +53,6 @@ extern float g_temperatura_ambiente2;
 extern float g_humedad_ambiente3;
 extern float g_temperatura_ambiente3;
 
-//LUISDA: Podría ser interesante englobar en un solo byte el estado de todos los relés, a estudiar para un poco más adelante, de momento así:
 extern unsigned char g_estado_ventilador1;
 extern unsigned char g_estado_ventilador2;
 
