@@ -231,7 +231,6 @@ void vlHIGROMETROS()
     tft.print(g_humedad2);
     tft.print("%");
 
-    //LUISDA: Una nota interesante, el código que esté comentado, lo he quitado. Dejarlo únicamente si tenemos dudas, si no, es un incordio y dificulta la lectura del código fuente.
 }
 
 void vlLDR()

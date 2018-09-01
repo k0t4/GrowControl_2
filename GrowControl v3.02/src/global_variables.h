@@ -4,9 +4,9 @@
 #ifndef GLOBAL_VARIABLES_H
 #define GLOBAL_VARIABLES_H
 
-//Para depurar con traza serie. Si deseo ver las trazas, descomentar lo siguiente: 
+//Para depurar con traza serie. Si deseo ver las trazas, descomentar lo siguiente y...: 
 //#define DEBUG_MODE
-//Compilar y subir
+//...Compilar y subir
 
 //Horainicio luz
 #define HORA_INICIO_LUZ 7.00
